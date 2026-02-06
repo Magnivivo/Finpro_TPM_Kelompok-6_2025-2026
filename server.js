@@ -5,10 +5,15 @@ const cors = require('cors') // cors untuk akses domain BE-FE
 const express = require('express')
 const app = express()
 
+const apiRoutes = require("./src/routes")
+app.use(express.json())
+
 //list alamat domain yg bisa membuka web
 app.use(cors({
     origin: ['https://localhost:5500', 'https://127.0.0.1:5500']
 }))
+
+app.use("/api", apiRoutes)
 
 //app.get('/about', (req, res) => {}) -> request datanf pada path spesifik bagian function jalankan sebuah respons
 app.get('/', (req, res) => { res.send('Hello from Express') })
@@ -22,7 +27,5 @@ app.get('/product', (req, res) => {
         { id: 2, name: 'Paijo', division: 'Front-End', Team : 'Redbone'}
     ])
 } )
-
-
 
 app.listen(3000, () => {console.log('Server is running')})
