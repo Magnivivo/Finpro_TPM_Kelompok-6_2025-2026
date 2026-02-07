@@ -2,8 +2,9 @@
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const bcrypt = require('bcryptjs');
 
-const AdminDashboardData = async (req, res) => {
+const getDashboard = async (req, res) => {
     try {
         //get team ID from Token
         const teamId = req.user.teamId;
@@ -56,4 +57,84 @@ const AdminDashboardData = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Gagal mengambil data dashboard" });
     }
+};
+
+const listTeams = async (req, res) => {
+    const { search, sortBy } = req.query;
+
+    let orderBy = {};
+    if (sortBy === 'name_asc') orderBy = { groupName: 'asc' };
+    if (sortBy === 'name_desc') orderBy = { groupName: 'desc' };
+    if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
+    if (sortBy === 'oldest') orderBy = { createdAt: 'asc' };
+
+    try {
+        const teams = await prisma.team.findMany({
+            where: {
+                groupName: { contains: search || "" } //utk fitur search
+            },
+            orderBy: orderBy,
+            select: { id: true, groupName: true, email: true, binusian: true } //order option's
+        });
+        res.json(teams);
+    }
+    catch (error) {
+        res.status(500).json({ error: "Gagal mengambil data tim" });
+    }
+};
+
+//melihat list data semua tim (search & sort)
+const getTeamById = async (req, res) => {
+    const { id } = req.params; // ambil ID dari url (/teams/1)
+    try {
+        const team = await prisma.team.findUnique({
+            where: {
+                groupname: { contains: search || "" }
+            },
+            orderBy: orderBy,
+            select: { id: true, groupName: true, email: true, binusian: true }
+        });
+        res.json(teams);
+    }
+    catch (error) {
+        res.status(500).json({ error: "gagal ambil data tim" });
+    }
+};
+
+//edit tim
+const updateTeam = async (req, res) => {
+    const { id } = req.params;
+    const data = req.body; // Data baru
+    
+    try {
+        const updatedTeam = await prisma.team.update({
+            where: { id: parseInt(id) },
+            data: data 
+        });
+        res.json({ message: "Update berhasil", data: updatedTeam });
+    }
+    catch (error) {
+        res.status(500).json({ error: "Gagal melakukan edit data" });
+    }
+};
+
+//hapus tim
+const deleteTeam = async (req, res) => {
+    const { id } = req.params;
+    try {
+        await prisma.team.delete({ where: { id: parseInt(id) } });
+        res.json({ message: "Team berhasil dihapus" });
+    }
+    catch (error) {
+        res.status(500).json({ error: "Penghapusan tim Gagal" });
+    }
+};
+
+module.exports = {
+    getDashboard,
+    listTeams,
+    createTeam,
+    getTeamById,
+    updateTeam,
+    deleteTeam
 };

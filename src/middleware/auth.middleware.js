@@ -14,7 +14,7 @@ const authenticateToken = (req, res, next) => {
 
     //kick anyone without token -> not login yet
     if (token == null) {
-        return res.status(401).json({ "Akses ditolak! Tolong login dahulu."});
+        return res.status(401).json({ error: "Akses ditolak! Tolong login dahulu."});
     }
 
     //if not null -> cek keaslian (verifikasi) token
