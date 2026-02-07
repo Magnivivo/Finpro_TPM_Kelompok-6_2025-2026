@@ -16,8 +16,6 @@ datasource db {
 model Team{
   id          String @id @default(cuid())
   teamName    String @unique
-  password    String  //hashed with bcrypt
-  isBinusian  Boolean
   createdAt   DateTime @default(now())
 
   leader      Leader?  
@@ -28,6 +26,8 @@ model Leader{
   teamID      String   @unique
   fullName    String
   email       String   @unique
+  password    String  //hashed with bcrypt
+  isBinusian  Boolean
   ContactNum  String   @unique
   LineID      String   @unique
   githubID    String
