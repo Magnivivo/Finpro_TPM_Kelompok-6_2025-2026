@@ -6,10 +6,37 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Team{
+  id          String @id @default(cuid())
+  teamName    String @unique
+  password    String  //hashed with bcrypt
+  isBinusian  Boolean
+  createdAt   DateTime @default(now())
+
+  leader      Leader?  
+}
+
+model Leader{
+  id          String   @id @default(cuid())
+  teamID      String   @unique
+  fullName    String
+  email       String   @unique
+  ContactNum  String   @unique
+  LineID      String   @unique
+  githubID    String
+  birthPlace  String
+  birthDate   DateTime
+  cvPath      String
+  idCardPath  String
+  createdAt   DateTime @default(now())
+  updateAt    Datetime @updatedAt
+
+  teamID      Team     @relation(fields: [teamID], references: [id], onDelete: Cascade)      
 }
