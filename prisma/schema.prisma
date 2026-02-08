@@ -1,11 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// File: prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js" // Pastikan ada '-js' di ujungnya
 }
 
 datasource db {
@@ -13,20 +9,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Team{
-  id          String @id @default(cuid())
-  teamName    String @unique
-  createdAt   DateTime @default(now())
+model Team {
+  id        String   @id @default(cuid())
+  teamName  String   @unique
+  createdAt DateTime @default(now())
 
-  leader      Leader?  
+  // Relasi balik ke Leader
+  leader    Leader?
 }
 
-model Leader{
+model Leader {
   id          String   @id @default(cuid())
-  teamID      String   @unique
   fullName    String
   email       String   @unique
-  password    String  //hashed with bcrypt
+  password    String   // hashed with bcrypt
   isBinusian  Boolean
   ContactNum  String   @unique
   LineID      String   @unique
@@ -36,7 +32,12 @@ model Leader{
   cvPath      String
   idCardPath  String
   createdAt   DateTime @default(now())
-  updateAt    Datetime @updatedAt
+  updateAt    DateTime @updatedAt // SUDAH DIPERBAIKI: DateTime (T kapital)
 
-  teamID      Team     @relation(fields: [teamID], references: [id], onDelete: Cascade)      
+  // RELASI:
+  // 1. teamId (pake 'd' kecil) sebagai foreign key (Scalar Field)
+  teamId      String   @unique 
+  
+  // 2. team (objek) sebagai jembatan relasi ke model Team
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
