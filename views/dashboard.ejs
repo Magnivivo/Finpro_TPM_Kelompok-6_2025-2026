@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Hackathon</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- NAVBAR (Updated: Konsisten dengan Index) -->
+    <nav class="navbar">
+        <div class="logo">HACKATHON</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#mentors">Mentor & Jury</a></li>
+            <li><a href="/#prizes">Prizes</a></li>
+            <li><a href="/#about">About</a></li>
+            <li><a href="/#timeline">Timeline</a></li>
+            <li><a href="/#faq">FAQ</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <div class="dropdown">
+                <button class="btn-login-dropdown" id="loginBtn">
+                    Account <span class="arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="loginMenu">
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="/dashboard">My Team</a>
+                    <a href="/login" onclick="showLogoutModal()" class="logout-text">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="#dashboard" class="sidebar-item active" onclick="showSection('dashboard')">
+                <span class="icon">🏠</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="#timeline" class="sidebar-item" onclick="showSection('timeline')">
+                <span class="icon">🕐</span>
+                <span>Timeline</span>
+            </a>
+            <a href="#contact" class="sidebar-item" onclick="showSection('contact')">
+                <span class="icon">👤</span>
+                <span>Contact Person</span>
+            </a>
+            <a href="#" class="sidebar-item" onclick="showLogoutModal()">
+                <span class="icon">🚪</span>
+                <span>Log Out</span>
+            </a>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="team-info-card">
+                    <h2 class="section-title">Team Information</h2>
+                    <div class="team-name-box">
+                        <h3 id="teamName">AstraDev</h3>
+                    </div>
+
+                    <div class="leader-info-box">
+                        <h3 id="leaderName">Michael Wijaya</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Nama</label>
+                                <p id="nama">Michael Wijaya</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Phone Number</label>
+                                <p id="phone">+62 858 9266 1187</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Email</label>
+                                <p id="email">m9ich@gmail.com</p>
+                            </div>
+                            <div class="info-item">
+                                <label>Institut</label>
+                                <p id="institut">Universitas Bina Nusantara</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="documents-card">
+                    <h2 class="section-title">Documents</h2>
+                    <div class="document-buttons">
+                        <button class="doc-btn" onclick="viewDocument('cv')">View CV</button>
+                        <button class="doc-btn" onclick="viewDocument('idcard')">View ID Card</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timeline Section -->
+            <section id="timeline-section" class="content-section">
+                <div class="timeline-header">
+                    <h2 class="section-title">Timeline</h2>
+                    <p class="timeline-subtitle">Lihat jadwal pelaksanaan Hackaton 2025 di sini.</p>
+                </div>
+
+                <div class="timeline-card">
+                    <h3 id="timelineLeaderName">Michael Wijaya</h3>
+                    
+                    <div class="timeline-items">
+                        <div class="timeline-item">
+                            <div class="timeline-icon green">
+                                <!-- Icon Check -->
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C10.9 2 10 2.9 10 4V8C10 9.1 10.9 10 12 10C13.1 10 14 9.1 14 8V4C14 2.9 13.1 2 12 2Z" fill="white"/><path d="M18 8C16.9 8 16 8.9 16 10V14C16 15.1 16.9 16 18 16C19.1 16 20 15.1 20 14V10C20 8.9 19.1 8 18 8Z" fill="white"/><path d="M6 12C4.9 12 4 12.9 4 14V18C4 19.1 4.9 20 6 20C7.1 20 8 19.1 8 18V14C8 12.9 7.1 12 6 12Z" fill="white"/></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-line"></div>
+                                <h4>Open Registration</h4>
+                                <p class="timeline-date">10 Feb 2025</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-icon red">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C10.9 2 10 2.9 10 4V8C10 9.1 10.9 10 12 10C13.1 10 14 9.1 14 8V4C14 2.9 13.1 2 12 2Z" fill="white"/><path d="M18 8C16.9 8 16 8.9 16 10V14C16 15.1 16.9 16 18 16C19.1 16 20 15.1 20 14V10C20 8.9 19.1 8 18 8Z" fill="white"/><path d="M6 12C4.9 12 4 12.9 4 14V18C4 19.1 4.9 20 6 20C7.1 20 8 19.1 8 18V14C8 12.9 7.1 12 6 12Z" fill="white"/></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-line"></div>
+                                <h4>Close Registration</h4>
+                                <p class="timeline-date">20 Feb 2025</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-icon purple">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="15" rx="2" stroke="white" stroke-width="2" fill="none"/><path d="M8 2V6M16 2V6" stroke="white" stroke-width="2"/><path d="M3 9H21" stroke="white" stroke-width="2"/></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-line"></div>
+                                <h4>Technical Meeting</h4>
+                                <p class="timeline-date">25 Feb 2025</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-icon purple">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 13L7 17L21 3" stroke="white" stroke-width="3" stroke-linecap="round"/></svg>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Competition Day</h4>
+                                <p class="timeline-date">1 Mar 2025</p>
+                                <!-- TOMBOL JOIN COMPETITION -->
+                                <button class="join-btn">Join Competition</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Person Section -->
+            <section id="contact-section" class="content-section">
+                <div class="contact-header">
+                    <h2 class="section-title">Contact Person</h2>
+                    <p class="contact-subtitle">Hubungi contact person untuk informasi lebih lanjut.</p>
+                </div>
+
+                <div class="contact-card">
+                    <h3>Contact Person</h3>
+                    <div class="contact-avatar">
+                        <img src="/image/1.png" alt="Contact Person" id="contactImage">
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon whatsapp">
+                                📞
+                            </div>
+                            <span>+62 812 3457 9268</span>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon email">
+                                ✉️
+                            </div>
+                            <span>rian001@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon clock">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                </svg>
+                            </div>
+                            <span>Senin - Minggu 02.00 - 21.00 WIB</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLogoutModal()">×</button>
+            <h2>Apakah Anda yakin ingin logout?</h2>
+            <div class="modal-buttons">
+                <a href="/" class="modal-btn confirm" style="text-decoration: none; display: inline-block; text-align: center; line-height: normal;">Ya</a>
+                <button class="modal-btn cancel" onclick="closeLogoutModal()">Tidak</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Viewer Modal -->
+    <div id="documentModal" class="modal">
+        <div class="document-modal-content">
+            <button class="modal-close" onclick="closeDocumentModal()">×</button>
+            <div id="documentViewer"></div>
+        </div>
+    </div>
+
+    <!-- Script Dashboard -->
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
