@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Hackathon 2025</title>
+    <!-- CSS KHUSUS REGISTER -->
+    <link rel="stylesheet" href="/css/register.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="auth-body">
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">HACKATHON</div>
+            <div class="auth-nav">
+                <a href="#" class="active" id="navUserReg">User Registration</a>
+                <a href="#" id="navTeamReg">Team Registration</a>
+                <a href="/login">Login</a>
+            </div>
+            <a href="/" class="btn-back">Back</a>
+        </div>
+
+        <form id="registerForm" action="/login" method="GET">
+            
+            <!-- STEP 1: INFO GROUP -->
+            <div class="step active" id="step1">
+                <div class="auth-form-container">
+                    <div class="form-title">IDENTITAS GROUP (STEP 1/2)</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Nama Group</label>
+                            <input type="text" id="groupName" placeholder="Contoh: Garuda Team">
+                        </div>
+                        <div class="input-group">
+                            <label>Tipe Peserta</label>
+                            <select id="participantType">
+                                <option value="binusian">Binusian</option>
+                                <option value="non-binusian">Non-Binusian</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Kata Sandi</label>
+                            <input type="password" id="regPassword" placeholder="Min. 8 Karakter, Huruf Besar">
+                        </div>
+                        <div class="input-group">
+                            <label>Konfirmasi Kata Sandi</label>
+                            <input type="password" id="confirmPassword" placeholder="Ulangi Password">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-submit" id="nextBtn">Next Step</button>
+                        <a href="/register" class="btn-cancel">Cancel</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: INFO LEADER -->
+            <div class="step" id="step2">
+                <div class="auth-form-container">
+                    <div class="form-title">IDENTITAS KETUA TIM (STEP 2/2)</div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Nama Lengkap</label>
+                            <input type="text" id="leaderName" placeholder="Nama Sesuai KTP">
+                        </div>
+                        <div class="input-group">
+                            <label>Email</label>
+                            <input type="email" id="email" placeholder="email@domain.com">
+                        </div>
+                        <div class="input-group">
+                            <label>Nomor WhatsApp</label>
+                            <input type="number" id="whatsapp" placeholder="0812...">
+                        </div>
+                        <div class="input-group">
+                            <label>LINE ID</label>
+                            <input type="text" id="lineId">
+                        </div>
+                        <div class="input-group">
+                            <label>Github ID</label>
+                            <input type="text" id="githubId">
+                        </div>
+                        <div class="input-group">
+                            <label>Tanggal Lahir</label>
+                            <input type="date" id="birthDate">
+                        </div>
+                        <div class="input-group">
+                            <label>Upload CV</label>
+                            <div class="file-upload">
+                                <label for="cvUpload" class="upload-btn">Choose File</label>
+                                <input type="file" id="cvUpload">
+                                <span class="file-name">No file chosen</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Upload ID Card</label>
+                            <div class="file-upload">
+                                <label for="idUpload" class="upload-btn">Choose File</label>
+                                <input type="file" id="idUpload">
+                                <span class="file-name">No file chosen</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" id="prevBtn">Back</button>
+                        <button type="submit" class="btn-submit">Submit</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Script Internal untuk Logic Step -->
+    <script>
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const navUser = document.getElementById('navUserReg');
+        const navTeam = document.getElementById('navTeamReg');
+
+        if(nextBtn && prevBtn) {
+            nextBtn.addEventListener('click', () => {
+                // Validasi Simple
+                const pass = document.getElementById('regPassword').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                const group = document.getElementById('groupName').value;
+
+                if(!group) { alert("Nama Group harus diisi!"); return; }
+                if(pass.length < 8) { alert("Password minimal 8 karakter!"); return; }
+                if(pass !== confirm) { alert("Password tidak cocok!"); return; }
+
+                // Pindah Step
+                step1.classList.remove('active');
+                step2.classList.add('active');
+                navUser.classList.remove('active');
+                navTeam.classList.add('active');
+            });
+
+            prevBtn.addEventListener('click', () => {
+                // Balik Step
+                step2.classList.remove('active');
+                step1.classList.add('active');
+                navTeam.classList.remove('active');
+                navUser.classList.add('active');
+            });
+        }
+
+        // Tampilkan Nama File Upload
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const span = this.parentElement.querySelector('.file-name');
+                if (this.files.length > 0) span.textContent = this.files[0].name;
+            });
+        });
+    </script>
+</body>
+</html>

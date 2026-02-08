@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Hackathon 2025</title>
+    <!-- CSS KHUSUS LOGIN -->
+    <link rel="stylesheet" href="/css/login.css">
+    <!-- Font Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="auth-body">
+
+    <!-- Card Login -->
+    <div class="auth-card">
+        <!-- Header: Logo & Navigasi -->
+        <div class="auth-header">
+            <div class="auth-logo">HACKATHON</div>
+            <div class="auth-nav">
+                <a href="/register">User Registration</a>
+                <a href="/register">Team Registration</a>
+                <a href="#" class="active">Login</a>
+            </div>
+            <a href="/" class="btn-back">Back</a>
+        </div>
+
+        <!-- Form Login -->
+        <div class="auth-form-container">
+            <div class="form-title">IDENTITAS KETUA TIM</div>
+            
+            <form action="/dashboard" method="GET">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Nama Tim</label>
+                        <input type="text" name="teamName" placeholder="Contoh: AstraDev" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Kata Sandi</label>
+                        <input type="password" name="password" placeholder="********" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Login</button>
+                    <a href="/login" class="btn-cancel">Cancel</a>
+                </div>
+                
+                <p class="signup-link">Don't have an account? <a href="/register">Sign up</a></p>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Hackathon</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <!-- NAVBAR (Updated: Konsisten dengan Index) -->
+    <nav class="navbar">
+        <div class="logo">HACKATHON ADMIN</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#mentors">Mentor & Jury</a></li>
+            <li><a href="/#prizes">Prizes</a></li>
+            <li><a href="/#about">About</a></li>
+            <li><a href="/#timeline">Timeline</a></li>
+            <li><a href="/#faq">FAQ</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <div class="dropdown">
+                <button class="btn-login-dropdown" id="loginBtn">
+                    Account <span class="arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="loginMenu">
+                    <a href="/admin">Admin Panel</a>
+                    <a href="#" onclick="window.location.href='/'" class="logout-text">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 class="page-title">Participant List</h1>
+
+            <!-- Search and Sort Bar -->
+            <div class="control-bar">
+                <div class="search-box">
+                    <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search by Team Name..." onkeyup="searchTeams()">
+                </div>
+                
+                <div class="sort-dropdown">
+                    <button class="sort-btn" onclick="toggleSortDropdown()">
+                        Sort by
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <div id="sortOptions" class="sort-options">
+                        <div class="sort-option" onclick="sortTeams('name_asc')">Name (A-Z)</div>
+                        <div class="sort-option" onclick="sortTeams('name_desc')">Name (Z-A)</div>
+                        <div class="sort-option" onclick="sortTeams('date_newest')">Registration (Newest)</div>
+                        <div class="sort-option" onclick="sortTeams('date_oldest')">Registration (Oldest)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teams Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Team Name</th>
+                            <th>Registration Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamsTableBody">
+                        <!-- Data will be populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content wide">
+            <button class="modal-close" onclick="closeViewModal()">×</button>
+            <h2>Team Details</h2>
+            <div id="teamDetailsContent"></div>
+        </div>
+    </div>
+
+    <!-- Edit Team Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content wide">
+            <button class="modal-close" onclick="closeEditModal()">×</button>
+            <h2>Edit Team</h2>
+            <div id="editFormContent"></div>
+            <div class="modal-buttons">
+                <button class="modal-btn save" onclick="saveTeamChanges()">Save Changes</button>
+                <button class="modal-btn cancel" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeDeleteModal()">×</button>
+            <h2>Confirm Delete</h2>
+            <p style="color: #fff; margin: 2rem 0;">Are you sure you want to delete this team? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="confirmDelete()">Yes, Delete</button>
+                <button class="modal-btn cancel" onclick="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Admin -->
+    <script src="/js/admin.js"></script>
+</body>
+</html>
