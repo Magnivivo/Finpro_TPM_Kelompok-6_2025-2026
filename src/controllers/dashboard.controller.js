@@ -2,7 +2,6 @@
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const bcrypt = require('bcryptjs');
 
 const getDashboard = async (req, res) => {
     try {
@@ -85,19 +84,26 @@ const listTeams = async (req, res) => {
 
 //melihat list data semua tim (search & sort)
 const getTeamById = async (req, res) => {
-    const { id } = req.params; // ambil ID dari url (/teams/1)
+    const { id } = req.params;
+
     try {
         const team = await prisma.team.findUnique({
-            where: {
-                groupname: { contains: search || "" }
-            },
-            orderBy: orderBy,
-            select: { id: true, groupName: true, email: true, binusian: true }
+            where: { id: parseInt(id) },
+            select: {
+                id: true,
+                groupName: true,
+                email: true,
+                binusian: true
+            }
         });
-        res.json(teams);
-    }
-    catch (error) {
-        res.status(500).json({ error: "gagal ambil data tim" });
+
+        if (!team) {
+            return res.status(404).json({ error: "Tim tidak ditemukan" });
+        }
+
+        res.json(team);
+    } catch (error) {
+        res.status(500).json({ error: "Gagal ambil data tim" });
     }
 };
 
@@ -133,7 +139,6 @@ const deleteTeam = async (req, res) => {
 module.exports = {
     getDashboard,
     listTeams,
-    createTeam,
     getTeamById,
     updateTeam,
     deleteTeam
