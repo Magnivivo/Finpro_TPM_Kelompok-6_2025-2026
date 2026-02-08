@@ -1,32 +1,34 @@
-//to test always run [node server.js] in the terminal
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
 
-const express = require('express')
-const app = express()
+// Load environment variables dari .env
+dotenv.config();
 
-const cors = require('cors') // cors untuk akses domain BE-FE
-const apiRoutes = require("./src/routes")
-app.use(express.json())
-
+const app = express();
 const PORT = process.env.PORT || 5500;
 
-//list alamat domain yg bisa membuka web
+// ================= MIDDLEWARE =================
 app.use(cors({
-    origin: ['https://localhost:5500', 'https://127.0.0.1:5500'],
+    origin: ['http://localhost:5500', 'http://127.0.0.1:5500'], // Gunakan http jika belum pakai SSL
     credentials: true
 }));
 
 app.use(express.json());
-app.use('/upload', express.static('uploads')) //untuk bagian upload file's
-
-//routes lists
-const apiRoutes = require("./src/routes");
-app.use('/api/auth', authController);
-app.use('/api/admin', adminRoutes);
-app.use("/api", apiRoutes)
-
-app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
+app.use('/upload', express.static('uploads')); // Akses file statis
 
+// ================= ROUTES =================
+// Pastikan kamu sudah membuat file-file ini di folder src/routes
+const authRoutes = require("./src/routes/auth.routes"); // Sesuaikan nama filenya
+const adminRoutes = require("./src/routes/admin.routes"); 
+const apiRoutes = require("./src/routes/index"); 
 
+app.use('/api/auth', authRoutes);   // Gunakan router, bukan controller langsung
+app.use('/api/admin', adminRoutes);
+app.use("/api", apiRoutes);
 
-app.listen(5500, () => {console.log('Server is running')})
+// ================= RUN SERVER =================
+app.listen(PORT, () => {
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+});
