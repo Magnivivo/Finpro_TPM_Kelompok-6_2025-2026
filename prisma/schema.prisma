@@ -1,7 +1,7 @@
 // File: prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client-js" // Pastikan ada '-js' di ujungnya
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,35 +9,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==================== TEAM ====================
+
 model Team {
-  id        String   @id @default(cuid())
+  teamId    String   @id @default(cuid())
   teamName  String   @unique
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Leader    String   @unique
 
-  // Relasi balik ke Leader
-  leader    Leader?
+  // One-to-Many: A Team has multiple Users (min 2, max 3) -> logic in controller
+  members   User[]
 }
 
-model Leader {
-  id          String   @id @default(cuid())
-  fullName    String
+// ==================== USER ====================
+// Each user belongs to exactly one team
+model User {
+  userId      String   @id @default(cuid())
+
+  // Personal Info
+  Name        String   @unique
   email       String   @unique
   password    String   // hashed with bcrypt
   isBinusian  Boolean
-  ContactNum  String   @unique
+  Whatsapp    String   @unique
   LineID      String   @unique
-  githubID    String
   birthPlace  String
   birthDate   DateTime
   cvPath      String
   idCardPath  String
-  createdAt   DateTime @default(now())
-  updateAt    DateTime @updatedAt // SUDAH DIPERBAIKI: DateTime (T kapital)
-
-  // RELASI:
-  // 1. teamId (pake 'd' kecil) sebagai foreign key (Scalar Field)
-  teamId      String   @unique 
   
-  // 2. team (objek) sebagai jembatan relasi ke model Team
-  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  //apakah user leader?
+  isLeader    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // RELATION: Each User belongs to one Team
+  teamId      String?
+  team        Team?     @relation(fields: [teamId], references: [teamId], onDelete: Cascade)
 }

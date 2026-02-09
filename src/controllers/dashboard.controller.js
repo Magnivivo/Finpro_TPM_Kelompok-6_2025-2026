@@ -10,25 +10,28 @@ const getDashboard = async (req, res) => {
 
         //get Team Data from database (- password)
         const team = await prisma.team.findUnique({
-            where: { id: teamId },
+            where: { teamId: teamId },
             select: {
-                groupName: true,
-                binusian: true,
-                fullName: true,
-                email: true,
-                whatsapp: true,
-                lineId: true,
-                githubId: true,
-                birthPlace: true,
-                birthDate: true,
-                cvUrl: true,
-                idCardUrl: true
+                teamId: true,
+                teamName: true,
+                Leader: true,
+                members: {
+                    select: {
+                        userId: true,
+                        Name: true,
+                        email: true,
+                        isBinusian: true,
+                        Whatsapp: true,
+                        LineID: true,
+                        isLeader: true
+                    }
+                }
             }
         });
         if (!team) {
             return res.status(404).json({ error: "Data tim tidak ditemukan" });
         }
-            
+
         //Timeline data set
         const timelineData = [
             { event: "Open Registration", date: "2025-01-01" },
@@ -53,8 +56,8 @@ const getDashboard = async (req, res) => {
         });
     }
     catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Gagal mengambil data dashboard" });
+        console.error(error);
+        res.status(500).json({ error: "Gagal mengambil data dashboard" });
     }
 };
 
@@ -62,18 +65,18 @@ const listTeams = async (req, res) => {
     const { search, sortBy } = req.query;
 
     let orderBy = {};
-    if (sortBy === 'name_asc') orderBy = { groupName: 'asc' };
-    if (sortBy === 'name_desc') orderBy = { groupName: 'desc' };
+    if (sortBy === 'name_asc') orderBy = { teamName: 'asc' };
+    if (sortBy === 'name_desc') orderBy = { teamName: 'desc' };
     if (sortBy === 'newest') orderBy = { createdAt: 'desc' };
     if (sortBy === 'oldest') orderBy = { createdAt: 'asc' };
 
     try {
         const teams = await prisma.team.findMany({
             where: {
-                groupName: { contains: search || "" } //utk fitur search
+                teamName: { contains: search || "" } //utk fitur search
             },
             orderBy: orderBy,
-            select: { id: true, groupName: true, email: true, binusian: true } //order option's
+            select: { teamId: true, teamName: true, Leader: true, createdAt: true }
         });
         res.json(teams);
     }
@@ -88,12 +91,12 @@ const getTeamById = async (req, res) => {
 
     try {
         const team = await prisma.team.findUnique({
-            where: { id: parseInt(id) },
+            where: { teamId: id },
             select: {
-                id: true,
-                groupName: true,
-                email: true,
-                binusian: true
+                teamId: true,
+                teamName: true,
+                Leader: true,
+                createdAt: true
             }
         });
 
@@ -111,11 +114,11 @@ const getTeamById = async (req, res) => {
 const updateTeam = async (req, res) => {
     const { id } = req.params;
     const data = req.body; // Data baru
-    
+
     try {
         const updatedTeam = await prisma.team.update({
-            where: { id: parseInt(id) },
-            data: data 
+            where: { teamId: id },
+            data: data
         });
         res.json({ message: "Update berhasil", data: updatedTeam });
     }
@@ -128,7 +131,7 @@ const updateTeam = async (req, res) => {
 const deleteTeam = async (req, res) => {
     const { id } = req.params;
     try {
-        await prisma.team.delete({ where: { id: parseInt(id) } });
+        await prisma.team.delete({ where: { teamId: id } });
         res.json({ message: "Team berhasil dihapus" });
     }
     catch (error) {

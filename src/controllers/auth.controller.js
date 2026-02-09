@@ -6,30 +6,35 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "TPM_BNCC_nyawit_Activist";
 
 // ================= REGISTER =================
+// Register a new USER (not team - user can join team later)
 const register = async (req, res) => {
   try {
     const {
-      groupName,
+      Name,      // User's name (used as username too)
+      email,
       password,
       confirmPassword,
-      binusian,
-      fullName,
-      email,
+      isBinusian,
       whatsapp,
       lineId,
-      githubId,
       birthPlace,
       birthDate
     } = req.body;
 
-    // basic validation
-    if (!groupName || !password || !confirmPassword || !email) {
+    // Get file paths from multer upload
+    const cvPath = req.files?.cv?.[0]?.filename || '';
+    const idCardPath = req.files?.idCard?.[0]?.filename || '';
+
+    // Basic validation
+    if (!Name || !email || !password || !confirmPassword) {
       return res.status(400).json({ error: "Field wajib belum lengkap" });
     }
 
-    if (password !== confirmPassword)
+    if (password !== confirmPassword) {
       return res.status(400).json({ error: "Password tidak sesuai" });
+    }
 
+    // Password validation
     if (password.length < 8)
       return res.status(400).json({ error: "Password minimal 8 karakter" });
     if (!/[A-Z]/.test(password))
@@ -41,87 +46,109 @@ const register = async (req, res) => {
     if (!/[!@#$%^&*]/.test(password))
       return res.status(400).json({ error: "Password harus ada simbol" });
 
-    const existingData = await prisma.team.findFirst({
+    // Check if user already exists (email, whatsapp, lineId must be unique)
+    const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
           { email },
-          { whatsapp },
-          { lineId },
-          { groupName }
+          { Whatsapp: whatsapp },
+          { LineID: lineId }
         ]
       }
     });
 
-    if (existingData) {
-      return res.status(400).json({ error: "Data sudah terdaftar" });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email, WhatsApp, atau Line ID sudah terdaftar" });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newTeam = await prisma.team.create({
+    // Create user (without team - teamId is null)
+    const newUser = await prisma.user.create({
       data: {
-        groupName,
-        password: hashedPassword,
-        binusian: binusian === true || binusian === 'true',
-        fullName,
+        Name,
         email,
-        whatsapp,
-        lineId,
-        githubId,
-        birthPlace,
-        birthDate: birthDate ? new Date(birthDate) : null
+        password: hashedPassword,
+        isBinusian: isBinusian === true || isBinusian === 'true',
+        Whatsapp: whatsapp,
+        LineID: lineId,
+        birthPlace: birthPlace || '',
+        birthDate: birthDate ? new Date(birthDate) : new Date(),
+        cvPath: cvPath || '',
+        idCardPath: idCardPath || ''
+        // teamId is null by default - user joins team later
       }
     });
 
-    const { password: _, ...safeTeam } = newTeam;
+    // Remove password from response
+    const { password: _, ...safeUser } = newUser;
 
     res.status(201).json({
       message: "Registrasi berhasil",
-      data: safeTeam
+      data: safeUser
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error: " + error.message });
   }
 };
 
 // ================= LOGIN =================
+// Login with email and password
 const login = async (req, res) => {
   try {
-    const { groupName, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!groupName || !password) {
-      return res.status(400).json({ error: "Group name dan password wajib" });
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email dan password wajib" });
     }
 
-    const team = await prisma.team.findUnique({
-      where: { groupName }
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { team: true }  // Include team info if user has joined a team
     });
 
-    if (!team) {
-      return res.status(401).json({ error: "Tim tidak ditemukan" });
+    if (!user) {
+      return res.status(401).json({ error: "User tidak ditemukan" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, team.password);
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Password salah" });
     }
 
+    // Create JWT token
     const token = jwt.sign(
-      { teamId: team.id, groupName: team.groupName },
+      {
+        userId: user.userId,
+        email: user.email,
+        Name: user.Name,
+        teamId: user.teamId,
+        isLeader: user.isLeader
+      },
       JWT_SECRET,
       { expiresIn: '1d' }
     );
 
     res.json({
       message: "Login berhasil",
-      token
+      token,
+      user: {
+        userId: user.userId,
+        Name: user.Name,
+        email: user.email,
+        hasTeam: !!user.teamId,
+        teamName: user.team ? user.team.teamName : null
+      }
     });
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Gagal login" });
+    res.status(500).json({ error: "Gagal login: " + error.message });
   }
 };
 
@@ -131,26 +158,42 @@ const logout = async (req, res) => {
 };
 
 // ================= ME =================
+// Get current user info from JWT token
 const me = async (req, res) => {
   try {
-    const team = await prisma.team.findUnique({
-      where: { id: req.user.teamId },
+    // req.user is set by auth middleware (contains decoded JWT)
+    const user = await prisma.user.findUnique({
+      where: { userId: req.user.userId },
+      include: { team: true },
       select: {
-        id: true,
-        groupName: true,
-        email: true
+        userId: true,
+        Name: true,
+        email: true,
+        isBinusian: true,
+        Whatsapp: true,
+        LineID: true,
+        birthPlace: true,
+        birthDate: true,
+        teamId: true,
+        team: {
+          select: {
+            teamId: true,
+            teamName: true,
+            Leader: true
+          }
+        }
       }
     });
 
-    if (!team) {
+    if (!user) {
       return res.status(404).json({ error: "User tidak ditemukan" });
     }
 
-    res.json(team);
+    res.json(user);
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Gagal mengambil data user" });
+    res.status(500).json({ error: "Gagal mengambil data user: " + error.message });
   }
 };
 
